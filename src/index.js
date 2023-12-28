@@ -26,7 +26,6 @@ bot.on('messageCreate', async (message) => {
 })
 
 // store threads IDs by user
-// use database if too many different users
 const threadIdList = {};
 async function getAssistantResponse(userOrChannelID, channel, userQuery) {
     // assistant setup
