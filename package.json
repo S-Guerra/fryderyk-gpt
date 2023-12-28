@@ -1,0 +1,25 @@
+{
+  "name": "fryderyk-gpt",
+  "description": "A Discord Bot that impersonates Fryderyk Chopin using ChatGPT",
+  "keywords": [
+    "bot",
+    "ChatGPT",
+    "Chopin",
+    "Discord"
+  ],
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "S. Guerra",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "@discordjs/voice": "^0.16.1",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "googleapis": "^129.0.0",
+    "openai": "^4.21.0",
+    "ytdl-core": "^4.11.5"
+  },
+  "scripts": {
+    "start": "node ./src/index.js"
+  }
+}
