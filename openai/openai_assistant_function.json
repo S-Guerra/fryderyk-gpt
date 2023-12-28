@@ -1,0 +1,20 @@
+{
+    "name": "playYouTubeVideo",
+    "description": "play the audio of a YouTube video in a Discord voice channel",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "searchQuery": {
+                "type": "string",
+                "description": "the name or description of the video I am looking for, e.g. Minute Waltz"
+            },
+            "url": {
+                "type": "string",
+                "description": "the URL of the video I am looking for, e.g. https: //youtu.be/3H0SRv8QNwk?si=4TpbSXKz0Lsbh2Ui"
+            }
+        },
+        "required": [
+            "searchQuery"
+        ]
+    }
+}
