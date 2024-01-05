@@ -1,4 +1,3 @@
-```markdown
 # FryderykGPT - A Fryderyk Chopin impersonating Discord Music Bot
 A Discord Bot that that impersonates Fryderyk Chopin using the OpenAI API to answer users and play music in voice channels when asked to.
 
@@ -26,4 +25,3 @@ I welcome suggestions from the community. Whether you're a seasoned developer or
 3. Create your feature branch (`git checkout -b feature/AmazingFeature`).
 
 Help me in making this bot a symphony of collaborative innovation. Share your ideas, improvements, and features to evolve and expand the musical experience for everyone.
-```
