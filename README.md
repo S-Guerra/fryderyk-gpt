@@ -17,11 +17,10 @@ Come, discover this harmonious fusion of romanticism and technology, and let the
 - Command the bot with ease using simple, human-like text queries.
 - Experience a touch of the Romantic era with every note played.
 
-## Contributing
+## Contribute
 I welcome suggestions from the community. Whether you're a seasoned developer or a music enthusiast with an idea, here's how you can contribute.
 
-1. Fork the repository.
-2. Star the repository.
-3. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+- Fork the repository.
+- Star the repository.
 
 Help me in making this bot a symphony of collaborative innovation. Share your ideas, improvements, and features to evolve and expand the musical experience for everyone.
