@@ -1,6 +1,6 @@
 # FryderykGPT
 ## A Fryderyk Chopin impersonating Discord Music Bot
-A Discord Bot that that impersonates Fryderyk Chopin using the OpenAI Assistant API to answer users and play music in voice channels when asked to.
+A Discord Bot that that impersonates Fryderyk Chopin using the OpenAI Assistant API. It answers users and plays music in voice channels when asked to.
 
 ## Features
 - Play music from YouTube directly in your Discord voice channels.
