@@ -1,6 +1,6 @@
 "use strict";
 
-// npm modules
+// npm packages
 require("dotenv").config();
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates], partials: [Partials.Channel] });
@@ -11,6 +11,9 @@ const openai = new OpenAI({
 const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport, demuxProbe } = require("@discordjs/voice");
 const ytdl = require("ytdl-core");
 const yts = require("yt-search");
+// my modules
+const isValidURL = require("./misc/isValidURL");
+const getFirstVideo = require("./misc/getFirstVideo");
 
 // global variables
 let msgMember;
@@ -20,7 +23,16 @@ let voiceChannel;
 
 bot.once("ready", () => {
     // dependency report to verify all needed packages are installed
-    console.log("Fryderyk logged in!\n\n" + generateDependencyReport() + "\n");
+    console.log("It's-a Me, Fryderyk!\n\n" + generateDependencyReport() + "\n");
+});
+
+// slash commands setup
+bot.on("interactionCreate", (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    if (interaction.commandName === "introduction") {
+        return interaction.reply("En tant que votre Chopin virtuel sous la forme d'un bot Discord, je suis une fusion entre le passé romantique et la technologie moderne. Pour converser avec moi ou pour demander mes compositions, il suffit de me taguer dans un canal ou de m'envoyer un message direct (DM). Je suis à votre service pour vous offrir la musique et la prose du 19ème siècle où que vous soyez dans le serveur.");
+    }
 });
 
 bot.on("messageCreate", async (msg) => {
@@ -38,7 +50,7 @@ bot.on("messageCreate", async (msg) => {
     }
 });
 
-// setup event listener to disconnect bot when nobody in voice channel
+// event listener to disconnect bot when nobody in voice channel
 bot.on("voiceStateUpdate", async (oldState) => {
     if (oldState.channel && oldState.channel.members.size === 1) {
         connection.destroy();
@@ -264,41 +276,6 @@ async function stopAudio() {
     } else {
         console.log("\n Could not stop audio...\n");
         return "Could not stop the audio as it is not currently playing";
-    }
-}
-
-// get the first video from a search query
-async function getFirstVideo(searchQuery) {
-    try {
-        const { videos } = await yts(searchQuery);
-
-        if (!videos || videos.length <= 0) {
-            console.log("No search results found.");
-            return;
-        }
-
-        const videoId = videos[0].videoId;
-        const videoTitle = videos[0].title;
-        const stream = ytdl(`https://www.youtube.com/watch?v=${videoId}`, { filter: "audioonly" });
-
-        console.log(`\n First video found: https://www.youtube.com/watch?v=${videoId}`);
-        // Check if stream exists before returning
-        if (stream) {
-            return [stream, videoTitle];
-        } else {
-            console.log("Invalid stream.");
-        }
-    } catch (err) {
-        console.error(`Error getting audio stream: ${err}`);
-    }
-}
-
-// verify if valid URL
-function isValidURL(url) {
-    try {
-        return Boolean(new URL(url));
-    } catch (err) {
-        return false;
     }
 }
 

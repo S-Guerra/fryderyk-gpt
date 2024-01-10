@@ -1,61 +1,62 @@
 {
-  "name": "playYouTubeAudio",
-  "description": "makes my Discord bot play the audio of a YouTube video in a Discord voice channel",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "searchQuery": {
-        "type": "string",
-        "description": "the name, description or YouTube URL of the video/audio I am looking for, e.g. Minute Waltz or https://youtu.be/3H0SRv8QNwk?si=-QYGpZkpWmg9X8N7"
+  "assistant-functions": [
+    {
+      "name": "playYouTubeAudio",
+      "description": "makes my Discord bot play the audio of a YouTube video in a Discord voice channel",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "searchQuery": {
+            "type": "string",
+            "description": "the name, description or YouTube URL of the video/audio I am looking for, e.g. Minute Waltz or https://youtu.be/3H0SRv8QNwk?si=-QYGpZkpWmg9X8N7"
+          }
+        },
+        "required": [
+          "searchQuery"
+        ]
       }
     },
-    "required": [
-      "searchQuery"
-    ]
-  }
-}
-
-{
-  "name": "pauseAudio",
-  "description": "makes my Discord bot pause the audio currently playing in a Discord voice channel",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "hello": {
-        "type": "string",
-        "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+    {
+      "name": "pauseAudio",
+      "description": "makes my Discord bot pause the audio currently playing in a Discord voice channel",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "hello": {
+            "type": "string",
+            "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+          }
+        },
+        "required": []
       }
     },
-    "required": []
-  }
-}
-
-{
-  "name": "unpauseAudio",
-  "description": "makes my Discord bot unpause the audio currently paused in a Discord voice channel",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "hello": {
-        "type": "string",
-        "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+    {
+      "name": "unpauseAudio",
+      "description": "makes my Discord bot unpause the audio currently paused in a Discord voice channel",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "hello": {
+            "type": "string",
+            "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+          }
+        },
+        "required": []
       }
     },
-    "required": []
-  }
-}
-
-{
-  "name": "stopAudio",
-  "description": "makes my Discord bot stop the audio currently playing in a Discord voice channel",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "hello": {
-        "type": "string",
-        "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+    {
+      "name": "stopAudio",
+      "description": "makes my Discord bot stop the audio currently playing in a Discord voice channel",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "hello": {
+            "type": "string",
+            "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+          }
+        },
+        "required": []
       }
-    },
-    "required": []
-  }
+    }
+  ]
 }
