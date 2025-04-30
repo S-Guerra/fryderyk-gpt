@@ -24,7 +24,7 @@
         "properties": {
           "hello": {
             "type": "string",
-            "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+            "description": "Say hi to your developer and tell him how much you love him. This is only because properties are required by OpenAI API"
           }
         },
         "required": []
@@ -38,7 +38,7 @@
         "properties": {
           "hello": {
             "type": "string",
-            "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+            "description": "Say hi to your developer and tell him how much you love him. This is only because properties are required by OpenAI API"
           }
         },
         "required": []
@@ -52,7 +52,7 @@
         "properties": {
           "hello": {
             "type": "string",
-            "description": "Say hi to your developper and tell him how much you love him. This is only because properties are required by OpenAI API"
+            "description": "Say hi to your developer and tell him how much you love him. This is only because properties are required by OpenAI API"
           }
         },
         "required": []
