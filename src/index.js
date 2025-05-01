@@ -4,10 +4,11 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates], partials: [Partials.Channel] });
-const OpenAI = require("openai");
+const { OpenAI } = require("openai");
 const openai = new OpenAI({
     apiKey: process.env.FRYDERYKGPT_OPENAI_TOKEN
 });
+const openaiThreads = openai.beta.threads; // For ease of change if .beta gets dropped in the future
 const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport, demuxProbe } = require("@discordjs/voice");
 const ytdl = require("ytdl-core");
 const yts = require("yt-search");
@@ -67,7 +68,7 @@ async function getAssistantResponse(channelId, channel, userQuery) {
     // check if thread already exists
     if (!threadIdList[channelId]) {
         try {
-            const thread = await openai.beta.threads.create();
+            const thread = await openaiThreads.create();
             threadIdList[channelId] = thread.id;
             console.log(`New thread (thread_id: ${thread.id}) created for channel: ${channelId}).\n`);
         } catch (err) {
@@ -77,7 +78,7 @@ async function getAssistantResponse(channelId, channel, userQuery) {
 
     try {
         // create a message
-        const message = await openai.beta.threads.messages.create(
+        const message = await openaiThreads.messages.create(
             threadIdList[channelId],
             {
                 role: "user",
@@ -86,7 +87,7 @@ async function getAssistantResponse(channelId, channel, userQuery) {
         );
 
         // create a run
-        const run = await openai.beta.threads.runs.create(
+        const run = await openaiThreads.runs.create(
             threadIdList[channelId],
             { assistant_id: assistant.id }
         );
@@ -94,11 +95,11 @@ async function getAssistantResponse(channelId, channel, userQuery) {
         // wait for the run to complete
         async function waitForCompletion(channel) {
             channel.sendTyping();
-            let runRetrieved = await openai.beta.threads.runs.retrieve(threadIdList[channelId], run.id);
+            let runRetrieved = await openaiThreads.runs.retrieve(threadIdList[channelId], run.id);
             console.log(`Run status: ${runRetrieved.status}`);
             if (runRetrieved.status === "completed") {
                 // retrieve the answer in the thread
-                const allMessages = await openai.beta.threads.messages.list(threadIdList[channelId]);
+                const allMessages = await openaiThreads.messages.list(threadIdList[channelId]);
                 // send the message
                 channel.send(allMessages.data[0].content[0].text.value);
                 return;
@@ -130,7 +131,7 @@ async function getAssistantResponse(channelId, channel, userQuery) {
                 }
 
                 // submit function output
-                const submit = await openai.beta.threads.runs.submitToolOutputs(
+                const submit = await openaiThreads.runs.submitToolOutputs(
                     threadIdList[channelId],
                     run.id,
                     { tool_outputs: toolOutputsArray }
