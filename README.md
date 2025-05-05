@@ -6,6 +6,9 @@ A Discord Bot that that impersonates Fryderyk Chopin using the OpenAI Assistant 
 - Play music from YouTube directly in your Discord voice channels.
 - Command the bot with ease using simple, human-like text queries.
 
+## Requirements
+- FFmpeg
+
 ## Warning to my future self:
 jsonpath-plus version (~5.0.2) in yt-search has vulnerabilities
 ### TODO: 
