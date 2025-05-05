@@ -1,31 +1,52 @@
 "use strict";
 
-const ytdl = require("ytdl-core");
+const play = require("play-dl");
 const yts = require("yt-search");
+const isValidURL = require("./isValidURL");
 
-// get the first video from a search query
-async function getFirstVideo(searchQuery) {
+async function getFirstVideo(searchQueryOrURL) {
     try {
-        const { videos } = await yts(searchQuery);
+        let url;
+        let title;
 
-        if (!videos || videos.length <= 0) {
-            console.log("No search results found.");
-            return;
-        }
+        await play.setToken({
+            youtube: {
+                cookie: process.env.YOUTUBE_COOKIE
+            }
+        });
 
-        const videoId = videos[0].videoId;
-        const videoTitle = videos[0].title;
-        const stream = ytdl(`https://www.youtube.com/watch?v=${videoId}`, { filter: "audioonly" });
+        // If the input is a valid YouTube URL
+        if (isValidURL(searchQueryOrURL)) {
+            url = searchQueryOrURL;
 
-        console.log(`\n First video found: https://www.youtube.com/watch?v=${videoId}`);
-        // Check if stream exists before returning
-        if (stream) {
-            return [stream, videoTitle];
+            // Extract video ID
+            const videoId = new URL(url).searchParams.get("v");
+            const video = await yts({ videoId });
+
+            title = video?.title || "Unknown Title";
+
+            console.log(`\n Valid URL input: ${url}`);
         } else {
-            console.log("Invalid stream.");
+            // Input is a search query
+            const { videos } = await yts(searchQueryOrURL);
+
+            if (!videos || videos.length === 0) {
+                console.log("No results found.");
+                return;
+            }
+
+            url = `https://www.youtube.com/watch?v=${videos[0].videoId}`;
+            title = videos[0].title;
+
+            console.log(`\n First search result: ${url}`);
         }
+
+        // Get audio stream from play-dl
+        const streamData = await play.stream(url, { quality: 2 });
+
+        return [streamData.stream, title, streamData.type];
     } catch (err) {
-        console.error(`Error getting audio stream: ${err}`);
+        console.error(`Error in getFirstVideo: ${err}`);
     }
 }
 

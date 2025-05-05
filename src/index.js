@@ -9,11 +9,9 @@ const openai = new OpenAI({
     apiKey: process.env.FRYDERYKGPT_OPENAI_TOKEN
 });
 const openaiThreads = openai.beta.threads; // For ease of change if .beta gets dropped in the future
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport, demuxProbe } = require("@discordjs/voice");
-const ytdl = require("ytdl-core");
+const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport } = require("@discordjs/voice");
 const yts = require("yt-search");
 // my modules
-const isValidURL = require("./misc/isValidURL");
 const getFirstVideo = require("./misc/getFirstVideo");
 
 // global variables
@@ -165,43 +163,26 @@ async function playYouTubeAudio(searchQueryOrURL) {
     });
 
     // play audio if connection to voice channel successful
-    let videoTitle;
     if (!connection) {
         console.log("\n Not in a voice channel\n");
         return "User is not in a voice channel. Their request cannot be fulfilled";
     }
 
+    let videoTitle;
     let stream;
+    let type;
     let resource;
-    // if URL input
-    if (isValidURL(searchQueryOrURL)) {
-        // get video name to give Assistant API
-        let videoId = searchQueryOrURL.slice(searchQueryOrURL.indexOf("=") + 1);
-        let video = await yts({ videoId: videoId })
-        videoTitle = video.title;
-
-        // create audio stream
-        stream = await ytdl(searchQueryOrURL, { filter: "audioonly" });
-        stream.on("error", (err) => {
-            console.error(`Error: ${err}`);
-        });
-        console.log(`Valid URL: ${searchQueryOrURL}`);
-        // if search query input
-    } else {
-        try {
-            [stream, videoTitle] = await getFirstVideo(searchQueryOrURL);
-        } catch (err) {
-            console.error(`Error while creating audio stream: ${err}`);
-        }
+    try {
+        [stream, videoTitle, type] = await getFirstVideo(searchQueryOrURL);
+    } catch (err) {
+        console.error(`Error while creating audio stream: ${err}`);
     }
 
-    // probe audio stream to get type to improve performance
-    const probe = await demuxProbe(stream);
 
     // create audio resource
     try {
         resource = await createAudioResource(stream, {
-            inputType: probe.type
+            inputType: type
         });
     } catch (err) {
         console.error(`Error while creating audio resource: ${err}`);
