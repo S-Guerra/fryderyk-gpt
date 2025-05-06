@@ -42,7 +42,9 @@ async function getFirstVideo(searchQueryOrURL) {
         }
 
         // Get audio stream from play-dl
-        const streamData = await play.stream(url, { quality: 2 });
+        const streamData = await play.stream(url, {
+            discordPlayerCompatibility: true
+        });
 
         return [streamData.stream, title, streamData.type];
     } catch (err) {
