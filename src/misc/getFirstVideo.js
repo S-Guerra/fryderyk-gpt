@@ -1,6 +1,6 @@
 "use strict";
 
-const ytdl = require("ytdl-core");
+const play = require("play-dl");
 const yts = require("yt-search");
 const isValidURL = require("./isValidURL");
 
@@ -34,7 +34,6 @@ async function getFirstVideo(searchQueryOrURL) {
         }
 
         return [stream, videoTitle];
-
     } catch (err) {
         throw new Error(`getFirstVideo() failed: ${err.message}`);
     }

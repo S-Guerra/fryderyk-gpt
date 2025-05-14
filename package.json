@@ -19,8 +19,8 @@
     "dotenv": "^16.3.1",
     "libsodium-wrappers": "^0.7.13",
     "openai": "^4.96.2",
-    "yt-search": "^2.6.1",
-    "ytdl-core": "^4.11.5"
+    "play-dl": "^1.9.7",
+    "yt-search": "^2.6.1"
   },
   "scripts": {
     "start": "node ./src/index.js",

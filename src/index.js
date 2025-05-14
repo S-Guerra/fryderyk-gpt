@@ -6,8 +6,7 @@ const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates], partials: [Partials.Channel] });
 const { OpenAI } = require("openai");
 const openai = new OpenAI({ apiKey: process.env.FRYDERYKGPT_OPENAI_TOKEN });
-const openaiThreads = openai.beta.threads; // For ease of change if .beta gets dropped in the future
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport, demuxProbe } = require("@discordjs/voice");
+const openaiThreads = openai.beta.threads; // For ease of change if .beta gets dropped in the futureconst { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport, demuxProbe } = require("@discordjs/voice");
 
 const getFirstVideo = require("./misc/getFirstVideo");
 
