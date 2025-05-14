@@ -2,30 +2,41 @@
 
 const ytdl = require("ytdl-core");
 const yts = require("yt-search");
+const isValidURL = require("./isValidURL");
 
 // get the first video from a search query
-async function getFirstVideo(searchQuery) {
+async function getFirstVideo(searchQueryOrURL) {
     try {
-        const { videos } = await yts(searchQuery);
+        let videoId;
+        let videoTitle;
 
-        if (!videos || videos.length <= 0) {
-            console.log("No search results found.");
-            return;
+        if (isValidURL(searchQueryOrURL)) {
+            videoId = searchQueryOrURL.slice(searchQueryOrURL.indexOf("=") + 1);
+            const video = await yts({ videoId: videoId });
+            videoTitle = video.title;
+            console.log(`Valid URL: ${searchQueryOrURL}`);
+        } else {
+            const videoList = await yts(searchQueryOrURL);
+
+            if (!videoList || videoList.all.length === 0) {
+                throw new Error("No search results found for your query.");
+            }
+
+            videoId = videoList.all[0].videoId;
+            videoTitle = videoList.all[0].title;
+            console.log(`\n First video found: https://www.youtube.com/watch?v=${videoId}`);
         }
 
-        const videoId = videos[0].videoId;
-        const videoTitle = videos[0].title;
         const stream = ytdl(`https://www.youtube.com/watch?v=${videoId}`, { filter: "audioonly" });
 
-        console.log(`\n First video found: https://www.youtube.com/watch?v=${videoId}`);
-        // Check if stream exists before returning
-        if (stream) {
-            return [stream, videoTitle];
-        } else {
-            console.log("Invalid stream.");
+        if (!stream) {
+            throw new Error("Failed to create audio stream.");
         }
+
+        return [stream, videoTitle];
+
     } catch (err) {
-        console.error(`Error getting audio stream: ${err}`);
+        throw new Error(`getFirstVideo() failed: ${err.message}`);
     }
 }
 
