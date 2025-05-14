@@ -24,10 +24,21 @@ Due to the deprecation of major music libraries (e.g. `ytdl-core`), this project
 
 ---
 
+| Fryderyk in Action |
+|--------------------|
+| ![Screenshot 1](./assets/response-exemples/screenshot-1.png) |
+| ![Screenshot 2](./assets/response-exemples/screenshot-2.png) |
+| ![Screenshot 3](./assets/response-exemples/screenshot-3.png) |
+| ![Screenshot 4](./assets/response-exemples/screenshot-4.png) |
+
+---
+
 ## 🔧 Requirements
 
 - Node.js (v18+ recommended)
 - FFmpeg (added to your system PATH)
+- OpenAI API Key & Assistant Token
+- Discord Bot Token
 
 ---
 
