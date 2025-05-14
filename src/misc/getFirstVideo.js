@@ -4,51 +4,39 @@ const play = require("play-dl");
 const yts = require("yt-search");
 const isValidURL = require("./isValidURL");
 
+// get the first video from a search query
 async function getFirstVideo(searchQueryOrURL) {
     try {
-        let url;
-        let title;
+        let videoId;
+        let videoTitle;
 
-        await play.setToken({
-            youtube: {
-                cookie: process.env.YOUTUBE_COOKIE
-            }
-        });
-
-        // If the input is a valid YouTube URL
         if (isValidURL(searchQueryOrURL)) {
-            url = searchQueryOrURL;
-
-            // Extract video ID
-            const videoId = new URL(url).searchParams.get("v");
-            const video = await yts({ videoId });
-
-            title = video?.title || "Unknown Title";
-
-            console.log(`\n Valid URL input: ${url}`);
+            videoId = searchQueryOrURL.slice(searchQueryOrURL.indexOf("=") + 1);
+            const video = await yts({ videoId: videoId });
+            videoTitle = video.title;
+            console.log(`Valid URL: ${searchQueryOrURL}`);
         } else {
-            // Input is a search query
-            const { videos } = await yts(searchQueryOrURL);
+            const videoList = await yts(searchQueryOrURL);
 
-            if (!videos || videos.length === 0) {
-                console.log("No results found.");
-                return;
+            if (!videoList || videoList.all.length === 0) {
+                throw new Error("No search results found for your query.");
             }
 
-            url = `https://www.youtube.com/watch?v=${videos[0].videoId}`;
-            title = videos[0].title;
-
-            console.log(`\n First search result: ${url}`);
+            videoId = videoList.all[0].videoId;
+            videoTitle = videoList.all[0].title;
+            console.log(`\n First video found: https://www.youtube.com/watch?v=${videoId}`);
         }
 
-        // Get audio stream from play-dl
-        const streamData = await play.stream(url, {
-            discordPlayerCompatibility: true
-        });
+        const stream = ytdl(`https://www.youtube.com/watch?v=${videoId}`, { filter: "audioonly" });
 
-        return [streamData.stream, title, streamData.type];
+        if (!stream) {
+            throw new Error("Failed to create audio stream.");
+        }
+
+        return [stream, videoTitle];
+
     } catch (err) {
-        console.error(`Error in getFirstVideo: ${err}`);
+        throw new Error(`getFirstVideo() failed: ${err.message}`);
     }
 }
 

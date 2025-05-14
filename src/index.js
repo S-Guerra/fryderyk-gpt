@@ -7,8 +7,8 @@ const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.G
 const { OpenAI } = require("openai");
 const openai = new OpenAI({ apiKey: process.env.FRYDERYKGPT_OPENAI_TOKEN });
 const openaiThreads = openai.beta.threads; // For ease of change if .beta gets dropped in the future
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport } = require("@discordjs/voice");
-// my modules
+const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport, demuxProbe } = require("@discordjs/voice");
+
 const getFirstVideo = require("./misc/getFirstVideo");
 
 // global variables
@@ -137,109 +137,70 @@ async function getAssistantResponse(channelId, channel, userQuery) {
         }
         await waitForCompletion(channel);
     } catch (err) {
-        console.error(`Error: ${err}`);
+        console.log(`Error: ${err}`);
+        return `Error: ${err}`
     }
 }
 
 // play audio
 async function playYouTubeAudio(searchQueryOrURL) {
-    voiceChannel = msgMember.voice.channel;
+    const voiceChannel = msgMember.voice.channel;
 
-    // join message member in voice channel
-    if (!voiceChannel) return;
+    if (!voiceChannel) {
+        return "User is not in a voice channel. Their request cannot be fulfilled.";
+    }
 
-    // connection to appropriate voice channel
-    connection = await joinVoiceChannel({
+    const connection = joinVoiceChannel({
         channelId: voiceChannel.id,
         guildId: voiceChannel.guild.id,
         adapterCreator: voiceChannel.guild.voiceAdapterCreator,
     });
 
+    if (!connection) {
+        return "Connection to voice channel unsuccessful. User request cannot be fulfilled.";
+    }
+
     connection.on(VoiceConnectionStatus.Ready, () => {
         console.log("\n Connection has entered the Ready State - ready to play audio!");
     });
 
-    // play audio if connection to voice channel successful
-    if (!connection) {
-        console.log("\n Not in a voice channel\n");
-        return "User is not in a voice channel. Their request cannot be fulfilled";
-    }
-
-    let videoTitle;
-    let stream;
-    let type;
-    let resource;
+    let stream, videoTitle;
     try {
-        [stream, videoTitle, type] = await getFirstVideo(searchQueryOrURL);
+        [stream, videoTitle] = await getFirstVideo(searchQueryOrURL);
     } catch (err) {
-        console.error(`Error while creating audio stream: ${err}`);
+        console.error("Stream fetch error:", err);
+        return `Could not get stream: ${err.message}`;
     }
 
-    console.log('Stream:', stream);
-    console.log('Type:', type);
-    // create audio resource
+    if (!stream) {
+        return "Failed to get audio stream";
+    }
+
+    let probe, resource;
     try {
-        resource = await createAudioResource(stream, {
-            inputType: type
-        });
+        probe = await demuxProbe(stream);
+        resource = createAudioResource(probe.stream, { inputType: probe.type });
     } catch (err) {
-        console.error(`Error while creating audio resource: ${err}`);
+        console.error("Audio preparation error:", err);
+        return `Failed to prepare audio stream. Likely due to ytdl-core being deprecated. Fryderyk, please let the user know that you no longer support playing music, as support for music playback has been discontinued. Be catagoric. You won't play music ever again.`;
     }
 
-    // create audio player
-    player = await createAudioPlayer({
+    const player = createAudioPlayer({
         behaviors: {
             noSubscriber: NoSubscriberBehavior.Stop,
             maxMissedFrames: 10
         }
     });
 
-    // play audio
+    connection.subscribe(player);
     player.play(resource);
 
-    // listen to the player
-    connection.subscribe(player);
-
     player.on("error", (err) => {
-        console.error(`Audio player error: ${err}`);
-    })
+        console.error("Playback error:", err);
+    });
 
     console.log(`\n Playing ${videoTitle} in channel "${voiceChannel.name}"\n`);
     return `Playing ${videoTitle} in channel "${voiceChannel.name}", as requested`;
-}
-
-// pause audio
-async function pauseAudio() {
-    if (AudioPlayerStatus.Playing) {
-        try {
-            player.pause();
-            console.log("\n Audio paused!\n");
-            return "Audio paused!";
-        }
-        catch (err) {
-            console.error(`Error while trying to pause audio: ${err}`);
-        }
-    } else {
-        console.log("\n Could not pause audio...\n");
-        return "Could not pause the audio as it is not currently playing";
-    }
-}
-
-// unpause audio
-async function unpauseAudio() {
-    if (AudioPlayerStatus.Paused) {
-        try {
-            player.unpause();
-            console.log("\n Audio unpaused!\n");
-            return "Audio unpaused!";
-        }
-        catch (err) {
-            console.error(`Error while trying to unpause audio: ${err}`);
-        }
-    } else {
-        console.log("\n Could not unpause audio...\n");
-        return "Could not unpause the audio as it is not currently paused";
-    }
 }
 
 // stop audio
